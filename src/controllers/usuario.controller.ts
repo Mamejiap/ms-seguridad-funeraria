@@ -189,13 +189,14 @@ export class UsuarioController {
     const usuario = await this.servicioSeguridad.identificarUsuario(credenciales);
     if(usuario){
       const codigo2fa = this.servicioSeguridad.crearTextoAleatorio(5);
-      const login:Login = new Login();
+      const login: Login = new Login();
       login.usuarioId = usuario._id!;
       login.codigo2fa = codigo2fa;
       login.estadoCodigo2fa = false;
       login.token = '';
       login.estadoToken = false;
       await this.respositorioLogin.create(login);
+      usuario.clave = ''; // Ocultar clave del usuario
       // Notificar al usuario via correo o sms
       return usuario
     }
@@ -223,6 +224,17 @@ export class UsuarioController {
       const token = this.servicioSeguridad.crearToken(usuario);
       if (usuario){
         usuario.clave = ''; // Ocultar clave del usuario
+        try{
+          await this.usuarioRepository.logins(usuario._id).patch({
+            estadoCodigo2fa: true,
+            token: token
+          },
+          {
+            estadoCodigo2fa: false
+          })
+        } catch {
+        console.log("No se ha almacenado el cambio de estado en la base de datos");
+        }
         return {
           user: usuario,
           token: token
