@@ -23,6 +23,8 @@ import {LoginRepository, UsuarioRepository} from '../repositories';
 import {SeguridadUsuarioService} from '../services';
 import { service } from '@loopback/core';
 import {FactorDeAuntenticacionPorCodigo} from '../models/factor-de-auntenticacion-por-codigo.model';
+import {authenticate} from '@loopback/authentication';
+import {ConfiguracionSeguridad} from '../config/seguridad.config';
 
 
 export class UsuarioController {
@@ -75,6 +77,10 @@ export class UsuarioController {
     return this.usuarioRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options:[ConfiguracionSeguridad.menuUsuarioId, ConfiguracionSeguridad.listarAccion]
+  })
   @get('/usuario')
   @response(200, {
     description: 'Array of Usuario model instances',
@@ -92,6 +98,7 @@ export class UsuarioController {
   ): Promise<Usuario[]> {
     return this.usuarioRepository.find(filter);
   }
+
 
   @patch('/usuario')
   @response(200, {

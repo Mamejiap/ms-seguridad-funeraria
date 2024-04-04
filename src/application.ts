@@ -1,3 +1,4 @@
+import {registerAuthenticationStrategy, AuthenticationComponent} from '@loopback/authentication';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
 import {
@@ -8,6 +9,7 @@ import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
+import {AuthStrategy} from './auth/strategy';
 import {MySequence} from './sequence';
 
 export {ApplicationConfig};
@@ -40,5 +42,10 @@ export class App extends BootMixin(
         nested: true,
       },
     };
+
+    // Add this line to bind the strategy to the application
+    registerAuthenticationStrategy(this, AuthStrategy);
+    this.component(AuthenticationComponent);
+
   }
 }

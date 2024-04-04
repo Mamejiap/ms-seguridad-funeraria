@@ -92,4 +92,14 @@ export class SeguridadUsuarioService {
     return token
   }
 
+  /**
+   * Valida y Obtiene el rol de un token
+   * @param token token de autenticación
+   * @returns el Id del rol del usuario
+   */
+  obtenerRolDesdeToken(token: string): string {
+    const obj = jwt.verify(token, ConfiguracionSeguridad.claveJWT);
+    return obj.role;
+  }
+
 }
